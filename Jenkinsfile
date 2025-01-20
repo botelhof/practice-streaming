@@ -21,7 +21,7 @@ pipeline {
         }
         stage('Docker Build') {
             steps {
-                sh 'docker build -t myapp:${BUILD_NUMBER} .'
+                sh 'docker build -t streaming-app:${BUILD_NUMBER} .'
             }
         }
     }
