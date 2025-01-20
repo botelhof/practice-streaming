@@ -1,0 +1,67 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    environment:
+      - 'SPRING_DATA_CASSANDRA_CONTACT_POINTS=cassandra'
+      - 'SPRING_DATA_CASSANDRA_PORT=9042'
+    networks:
+      - practice_streaming_net
+
+  cassandra:
+    image: 'cassandra:latest'
+    environment:
+      - 'CASSANDRA_DC=datacenter1'
+      - 'CASSANDRA_ENDPOINT_SNITCH=GossipingPropertyFileSnitch'
+    healthcheck:
+      test: [ "CMD-SHELL", "cqlsh --username cassandra --password cassandra -e 'describe cluster'" ]
+      interval: 5s
+      timeout: 120s
+      retries: 30
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+    networks:
+      - practice_streaming_net
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    networks:
+      - practice_streaming_net
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    networks:
+      - practice_streaming_net
+
+  jenkins:
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+      - 8081:8080
+      - 50000:50000
+    container_name: jenkins
+    volumes:
+      - jenkins_home:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - practice_streaming_net
+
+volumes:
+  cassandra_data:
+  jenkins_home:
+
+networks:
+  practice_streaming_net:
