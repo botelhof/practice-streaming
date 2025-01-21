@@ -3,11 +3,6 @@ pipeline {
     tools {
         gradle 'Gradle'
     }
-    java {
-        toolchain {
-            languageVersion = JavaLanguageVersion.of(21)
-        }
-    }
     stages {
         stage('Checkout') {
             steps {
@@ -16,7 +11,7 @@ pipeline {
         }
         stage('Build') {
             steps {
-                sh 'gradle clean build'
+                sh './gradlew build'
             }
         }
         stage('Test') {
