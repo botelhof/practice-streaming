@@ -46,7 +46,7 @@ services:
       - practice_streaming_net
 
   jenkins:
-    image: jenkins/jenkins:lts
+    image: jenkins/jenkins:jdk21
     privileged: true
     user: root
     ports:
@@ -56,6 +56,8 @@ services:
     volumes:
       - jenkins_home:/var/jenkins_home
       - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
     networks:
       - practice_streaming_net
 

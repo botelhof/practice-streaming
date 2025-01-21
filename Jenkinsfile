@@ -3,6 +3,11 @@ pipeline {
     tools {
         gradle 'Gradle'
     }
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(21)
+        }
+    }
     stages {
         stage('Checkout') {
             steps {
